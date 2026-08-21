@@ -2997,30 +2997,9 @@ function mostrarUsuario() {
 
 }
 
-app.listen(
-    PORT,
-    () => {
+// Start
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Porta ${PORT}`);
+});
 
-        console.log(
-            "========================================"
-        );
-
-        console.log(
-            "🏥 PROJETO SENTINELA"
-        );
-
-        console.log(
-            "Servidor iniciado com sucesso!"
-        );
-
-        console.log(
-            "🌐 http://localhost:" +
-            PORT
-        );
-
-        console.log(
-            "========================================"
-        );
-
-    }
-);
