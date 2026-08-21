@@ -565,13 +565,17 @@
         }
 
 
-        // Carregar a fila ao abrir a página
-        carregarPacientes();
+ 
+  // ATUALIZAÇÃO AUTOMÁTICA
 
 
-        // Atualiza a lisata automaticamente a cada 10 segundos
-        setInterval(carregarPacientes, 10000);
+atualizar();
 
+
+setInterval(
+    atualizar,
+    2000
+);
 
     </script>
 
