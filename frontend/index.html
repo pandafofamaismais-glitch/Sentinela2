@@ -94,218 +94,212 @@
 
     <script>
 
-        async function login() {
+async function login() {
 
-            const usuario =
-                document
-                    .getElementById("usuario")
-                    .value
-                    .trim();
+    const usuario =
+        document
+            .getElementById("usuario")
+            .value
+            .trim();
 
+    const senha =
+        document
+            .getElementById("senha")
+            .value;
 
-            const senha =
-                document
-                    .getElementById("senha")
-                    .value;
+    // =========================================
+    // VALIDAR CAMPOS
+    // =========================================
 
+    if (!usuario || !senha) {
 
-            // =========================================
-            // VALIDAR CAMPOS
-            // =========================================
+        alert(
+            "Preencha usuário e senha."
+        );
 
-            if (!usuario || !senha) {
+        return;
 
-                alert(
-                    "Preencha usuário e senha."
-                );
+    }
 
-                return;
+    try {
 
-            }
+        // =========================================
+        // ENVIAR LOGIN PARA O BACKEND
+        // =========================================
 
+        const resposta = await fetch("/login", {
 
-            try {
+            method: "POST",
 
-                // =====================================
-                // ENVIAR LOGIN PARA O BACKEND
-                // =====================================
+            headers: {
+                "Content-Type": "application/json"
+            },
 
-                function login() {
-  fetch("/login", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      usuario: document.getElementById("usuario").value,
-      senha: document.getElementById("senha").value
-    })
-  })
-  .then(r => r.json())
-  .then(data => {
-    if (data.tipo === "triagem") location.href = "triagem.html";
-    if (data.tipo === "medico") location.href = "medico.html";
-    if (data.tipo === "atendimento") location.href = "atendimento.html";
-    
-  });
+            body: JSON.stringify({
+                usuario: usuario,
+                senha: senha
+            })
 
+        });
 
-                // =====================================
-                // LER RESPOSTA
-                // =====================================
 
-                const data =
-                    await resposta.json();
+        // =========================================
+        // LER RESPOSTA
+        // =========================================
 
+        const data =
+            await resposta.json();
 
-                // =====================================
-                // ERRO DO BACKEND
-                // =====================================
 
-                if (!resposta.ok) {
+        // =========================================
+        // ERRO DO BACKEND
+        // =========================================
 
-                    throw new Error(
+        if (!resposta.ok) {
 
-                        data.erro ||
-                        "Erro ao realizar login."
+            throw new Error(
 
-                    );
+                data.erro ||
+                "Erro ao realizar login."
 
-                }
-
-
-                // =====================================
-                // VERIFICAR USUÁRIO
-                // =====================================
-
-                if (!data.usuario) {
-
-                    throw new Error(
-                        "Resposta inválida do servidor."
-                    );
-
-                }
-
-
-                // =====================================
-                // SALVAR USUÁRIO
-                // =====================================
-
-                localStorage.setItem(
-
-                    "usuario",
-
-                    JSON.stringify(
-                        data.usuario
-                    )
-
-                );
-
-
-                console.log(
-                    "Login realizado:",
-                    data.usuario
-                );
-
-
-                // =====================================
-                // REDIRECIONAMENTO POR CARGO
-                // =====================================
-
-                switch (data.usuario.tipo) {
-
-
-                    case "triagem":
-
-                        window.location.href =
-                            "triagem.html";
-
-                        break;
-
-
-                    case "medico":
-
-                        window.location.href =
-                            "medico.html";
-
-                        break;
-
-
-                    case "recepcao":
-
-                        window.location.href =
-                            "atendimento.html";
-
-                        break;
-
-
-                    case "medicacoes":
-
-                        window.location.href =
-                            "medicacoes.html";
-
-                        break;
-
-
-                    case "administrador":
-
-                        window.location.href =
-                            "atendimento.html";
-
-                        break;
-
-
-                    default:
-
-                        alert(
-                            "Tipo de usuário sem permissão."
-                        );
-
-                        break;
-
-                }
-
-
-            }
-
-            catch (erro) {
-
-                console.error(
-                    "ERRO NO LOGIN:",
-                    erro
-                );
-
-
-                alert(
-                    erro.message ||
-                    "Não foi possível realizar o login."
-                );
-
-            }
+            );
 
         }
 
 
         // =========================================
-        // PERMITIR ENTER PARA LOGAR
+        // VERIFICAR USUÁRIO
         // =========================================
 
-        document
-            .getElementById("senha")
-            .addEventListener(
-                "keydown",
-                function(event) {
+        if (!data.usuario) {
 
-                    if (event.key === "Enter") {
-
-                        login();
-
-                    }
-
-                }
+            throw new Error(
+                "Resposta inválida do servidor."
             );
 
-    </script>
+        }
+
+
+        // =========================================
+        // SALVAR USUÁRIO
+        // =========================================
+
+        localStorage.setItem(
+
+            "usuario",
+
+            JSON.stringify(
+                data.usuario
+            )
+
+        );
+
+
+        console.log(
+            "Login realizado:",
+            data.usuario
+        );
+
+
+        // =========================================
+        // REDIRECIONAMENTO POR CARGO
+        // =========================================
+
+        switch (data.usuario.tipo) {
+
+            case "triagem":
+
+                window.location.href =
+                    "triagem.html";
+
+                break;
+
+
+            case "medico":
+
+                window.location.href =
+                    "medico.html";
+
+                break;
+
+
+            case "atendimento":
+
+                window.location.href =
+                    "atendimento.html";
+
+                break;
+
+
+            case "medicacoes":
+
+                window.location.href =
+                    "medicacoes.html";
+
+                break;
+
+
+            case "administrador":
+
+                window.location.href =
+                    "atendimento.html";
+
+                break;
+
+
+            default:
+
+                alert(
+                    "Tipo de usuário sem permissão."
+                );
+
+                break;
+
+        }
+
+
+    }
+
+    catch (erro) {
+
+        console.error(
+            "ERRO NO LOGIN:",
+            erro
+        );
+
+
+        alert(
+            erro.message ||
+            "Não foi possível realizar o login."
+        );
+
+    }
+
+}
+
+
+// =========================================
+// PERMITIR ENTER PARA LOGAR
+// =========================================
+
+document
+    .getElementById("senha")
+    .addEventListener(
+        "keydown",
+        function(event) {
+
+            if (event.key === "Enter") {
+
+                login();
+
+            }
+
+        }
+    );
+
+</script>
+
+    
 
 </body>
 
