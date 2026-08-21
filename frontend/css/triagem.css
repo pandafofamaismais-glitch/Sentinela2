@@ -1,0 +1,341 @@
+/*=========================================================
+                TRIAGEM - PROJETO SENTINELA
+=========================================================*/
+
+/* Cor principal da página */
+
+body{
+
+    background:linear-gradient(135deg,#FFFBEA,#FEF3C7);
+
+}
+
+/*=========================================================
+                    CONTAINER
+=========================================================*/
+
+.container{
+
+    max-width:850px;
+
+    margin:40px auto;
+
+    background:#FFFFFF;
+
+    border-radius:20px;
+
+    padding:35px;
+
+    box-shadow:0 15px 40px rgba(0,0,0,.12);
+
+    border-top:8px solid #CA8A04;
+
+}
+
+/*=========================================================
+                    TÍTULO
+=========================================================*/
+
+.container h2{
+
+    text-align:center;
+
+    color:#92400E;
+
+    margin-bottom:30px;
+
+    font-size:30px;
+
+}
+
+/*=========================================================
+                INPUTS
+=========================================================*/
+
+.container input,
+.container select,
+.container textarea{
+
+    width:100%;
+
+    padding:15px;
+
+    margin-bottom:18px;
+
+    border:2px solid #FCD34D;
+
+    border-radius:12px;
+
+    background:#FFFBEB;
+
+    font-size:15px;
+
+    transition:.25s;
+
+}
+
+.container input:hover,
+.container select:hover,
+.container textarea:hover{
+
+    border-color:#CA8A04;
+
+}
+
+.container input:focus,
+.container select:focus,
+.container textarea:focus{
+
+    outline:none;
+
+    border-color:#CA8A04;
+
+    box-shadow:0 0 0 4px rgba(202,138,4,.18);
+
+}
+
+.container textarea{
+
+    min-height:120px;
+
+    resize:vertical;
+
+}
+
+/*=========================================================
+                    BOTÃO
+=========================================================*/
+
+button{
+
+    width:100%;
+
+    padding:16px;
+
+    border:none;
+
+    border-radius:12px;
+
+    background:#CA8A04;
+
+    color:white;
+
+    font-size:17px;
+
+    font-weight:bold;
+
+    cursor:pointer;
+
+    transition:.25s;
+
+}
+
+button:hover{
+
+    background:#A16207;
+
+    transform:translateY(-2px);
+
+}
+
+/*=========================================================
+                RESULTADO
+=========================================================*/
+
+#resultado{
+
+    margin:25px 0;
+
+    padding:18px;
+
+    border-radius:12px;
+
+    text-align:center;
+
+    font-size:18px;
+
+    font-weight:bold;
+
+    transition:.3s;
+
+}
+
+/*=========================================================
+            CLASSIFICAÇÃO DE RISCO
+=========================================================*/
+
+.verde{
+
+    background:#DCFCE7;
+
+    color:#166534;
+
+    border-left:8px solid #16A34A;
+
+}
+
+.amarelo{
+
+    background:#FEF3C7;
+
+    color:#92400E;
+
+    border-left:8px solid #EAB308;
+
+}
+
+.vermelho{
+
+    background:#FEE2E2;
+
+    color:#991B1B;
+
+    border-left:8px solid #DC2626;
+
+}
+
+/*=========================================================
+                PLACEHOLDER
+=========================================================*/
+
+::placeholder{
+
+    color:#78716C;
+
+}
+
+/*=========================================================
+                SELECT
+=========================================================*/
+
+select{
+
+    cursor:pointer;
+
+}
+
+/*=========================================================
+                ANIMAÇÃO
+=========================================================*/
+
+.container{
+
+    animation:fadeTriagem .5s ease;
+
+}
+
+@keyframes fadeTriagem{
+
+    from{
+
+        opacity:0;
+
+        transform:translateY(30px);
+
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:translateY(0);
+
+    }
+
+}
+
+/*=========================================================
+            RESPONSIVIDADE
+=========================================================*/
+
+@media(max-width:900px){
+
+.container{
+
+    margin:20px;
+
+    padding:25px;
+
+}
+
+.container h2{
+
+    font-size:26px;
+
+}
+
+}
+
+@media(max-width:600px){
+
+.container{
+
+    padding:20px;
+
+}
+
+.container h2{
+
+    font-size:22px;
+
+}
+
+button{
+
+    font-size:16px;
+
+    padding:14px;
+
+}
+
+.container input,
+.container select,
+.container textarea{
+
+    font-size:14px;
+
+}
+
+}
+
+/*=========================================================
+            ACESSIBILIDADE
+=========================================================*/
+
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible{
+
+    outline:3px solid #2563EB;
+
+    outline-offset:3px;
+
+}
+
+/*=========================================================
+            ESTADOS DOS CAMPOS
+=========================================================*/
+
+input:disabled,
+textarea:disabled,
+select:disabled{
+
+    opacity:.6;
+
+    cursor:not-allowed;
+
+}
+
+/*=========================================================
+            TRANSIÇÕES
+=========================================================*/
+
+button,
+input,
+textarea,
+select{
+
+    transition:all .25s ease;
+
+}

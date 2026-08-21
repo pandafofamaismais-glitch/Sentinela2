@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Hospital São Bento | Atendimento
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="css/GLOBAL.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="css/layout.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="css/atendimento.css"
+    >
+
+</head>
+
+<body>
+
+    <!-- CONTEÚDO -->
+
+    <div class="main">
+
+        <div class="topbar">
+
+            <h2>
+                Atendimento
+            </h2>
+
+
+            <div class="usuario">
+
+                Atendimento
+
+            </div>
+
+        </div>
+
+
+        <div class="content">
+
+
+            <!-- PAINEL DA FILA -->
+
+            <div class="card">
+
+                <h3>
+                    Pacientes aguardando atendimento
+                </h3>
+
+
+                <div id="filaAtendimento">
+
+                </div>
+
+            </div>
+
+
+            <br>
+
+
+            <!-- FORMULÁRIO DE CADASTRO -->
+
+            <div
+                class="card"
+                id="formulario"
+                style="display:none;"
+            >
+
+                <h3>
+                    Cadastro do paciente
+                </h3>
+
+
+                <input
+                    type="hidden"
+                    id="triagemId"
+                >
+
+
+                <input
+                    type="text"
+                    id="nome"
+                    placeholder="Nome completo"
+                >
+
+
+                <input
+                    type="text"
+                    id="cpf"
+                    placeholder="CPF"
+                >
+
+
+                <select id="tipo">
+
+                    <option value="">
+                        Selecione o tipo
+                    </option>
+
+
+                    <option value="Convenio">
+                        Convênio
+                    </option>
+
+
+                    <option value="Particular">
+                        Particular
+                    </option>
+
+                </select>
+
+
+                <input
+                    type="date"
+                    id="dataNascimento"
+                >
+
+
+                <input
+                    type="text"
+                    id="telefone"
+                    placeholder="Telefone"
+                >
+
+
+                <input
+                    type="text"
+                    id="sexo"
+                    placeholder="Sexo"
+                >
+
+
+                <input
+                    type="text"
+                    id="endereco"
+                    placeholder="Endereço"
+                >
+
+
+                <input
+                    type="file"
+                    id="foto"
+                    accept=".png,.jpg,.jpeg,.webp"
+                >
+
+
+                <button
+                    onclick="concluirAtendimento()"
+                >
+
+                    Concluir atendimento
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- JS PRINCIPAL -->
+
+    <script src="js/app.js"></script>
+
+
+    <script>
+
+        /*
+        =========================================
+        PROTEÇÃO DA PÁGINA
+        =========================================
+
+        Atendimento pode ser acessado por:
+
+        - administrador
+        - atendimento
+
+        Outros setores não entram nesta página.
+        */
+
+        protegerPagina([
+            "administrador",
+            "atendimento"
+        ]);
+
+
+        let fila = [];
+
+
+        /*
+        =========================================
+        CARREGAR FILA
+        =========================================
+        */
+
+        async function carregarFila() {
+
+            try {
+
+                fila =
+                    await apiFetch(
+                        "/atendimento"
+                    );
+
+
+                mostrarFila();
+
+            }
+
+            catch (erro) {
+
+                console.error(
+                    erro
+                );
+
+
+                alert(
+                    erro.message
+                );
+
+            }
+
+        }
+
+
+        /*
+        =========================================
+        MOSTRAR FILA
+        =========================================
+        */
+
+        function mostrarFila() {
+
+            const div =
+                document.getElementById(
+                    "filaAtendimento"
+                );
+
+
+            div.innerHTML =
+                "";
+
+
+            if (
+                fila.length === 0
+            ) {
+
+                div.innerHTML =
+                    "<p>Nenhum paciente aguardando atendimento.</p>";
+
+                return;
+
+            }
+
+
+            fila.forEach(
+                (item, index) => {
+
+                    div.innerHTML += `
+
+                        <div class="card">
+
+                            <h3>
+                                ${item.nome || "Paciente"}
+                            </h3>
+
+                            <p>
+                                <b>Sintoma:</b>
+                                ${item.sintoma || "--"}
+                            </p>
+
+                            <p>
+                                <b>Risco:</b>
+                                ${item.risco || "--"}
+                            </p>
+
+                            <p>
+                                <b>Temperatura:</b>
+                                ${item.temperatura ?? "--"}
+                            </p>
+
+                            <button
+                                onclick="selecionar(${index})"
+                            >
+                                Atender
+                            </button>
+
+                        </div>
+
+                    `;
+
+                }
+            );
+
+        }
+
+
+        /*
+        =========================================
+        SELECIONAR PACIENTE
+        =========================================
+        */
+
+        function selecionar(index) {
+
+            const item =
+                fila[index];
+
+
+            if (!item) {
+
+                alert(
+                    "Paciente não encontrado."
+                );
+
+                return;
+
+            }
+
+
+            document.getElementById(
+                "formulario"
+            ).style.display =
+                "block";
+
+
+            document.getElementById(
+                "triagemId"
+            ).value =
+                item.id || "";
+
+
+            document.getElementById(
+                "nome"
+            ).value =
+                item.nome ||
+                (
+                    item.paciente
+                        ? item.paciente.nome
+                        : ""
+                );
+
+        }
+
+
+        /*
+        =========================================
+        CONCLUIR ATENDIMENTO
+        =========================================
+        */
+
+        async function concluirAtendimento() {
+
+            const nome =
+                document
+                    .getElementById(
+                        "nome"
+                    )
+                    .value
+                    .trim();
+
+
+            const cpf =
+                document
+                    .getElementById(
+                        "cpf"
+                    )
+                    .value
+                    .trim();
+
+
+            const tipo =
+                document
+                    .getElementById(
+                        "tipo"
+                    )
+                    .value;
+
+
+            if (
+                !nome ||
+                !cpf ||
+                !tipo
+            ) {
+
+                alert(
+                    "Preencha nome, CPF e tipo."
+                );
+
+                return;
+
+            }
+
+
+            const formData =
+                new FormData();
+
+
+            formData.append(
+                "triagemId",
+                document.getElementById(
+                    "triagemId"
+                ).value
+            );
+
+
+            formData.append(
+                "nome",
+                nome
+            );
+
+
+            formData.append(
+                "cpf",
+                cpf
+            );
+
+
+            formData.append(
+                "tipo",
+                tipo
+            );
+
+
+            formData.append(
+                "dataNascimento",
+                document.getElementById(
+                    "dataNascimento"
+                ).value
+            );
+
+
+            formData.append(
+                "telefone",
+                document.getElementById(
+                    "telefone"
+                ).value
+            );
+
+
+            formData.append(
+                "sexo",
+                document.getElementById(
+                    "sexo"
+                ).value
+            );
+
+
+            formData.append(
+                "endereco",
+                document.getElementById(
+                    "endereco"
+                ).value
+            );
+
+
+            const foto =
+                document.getElementById(
+                    "foto"
+                );
+
+
+            if (
+                foto.files.length > 0
+            ) {
+
+                formData.append(
+                    "foto",
+                    foto.files[0]
+                );
+
+            }
+
+
+            try {
+
+                const data =
+                    await apiFetch(
+                        "/atendimento",
+                        {
+
+                            method:
+                                "POST",
+
+                            body:
+                                formData
+
+                        }
+                    );
+
+
+                alert(
+                    data.mensagem
+                );
+
+
+                window.location.reload();
+
+            }
+
+            catch (erro) {
+
+                console.error(
+                    erro
+                );
+
+
+                alert(
+                    erro.message
+                );
+
+            }
+
+        }
+
+
+        /*
+        =========================================
+        INICIAR
+        =========================================
+        */
+
+        carregarFila();
+
+    </script>
+
+</body>
+
+</html>

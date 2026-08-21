@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Hospital São Bento | Login</title>
+
+    <link rel="stylesheet" href="css/GLOBAL.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/index.css">
+
+</head>
+
+<body>
+
+    <div class="container">
+
+        <!-- LOGO -->
+
+        <img
+            src="/imagens/logo.png"
+            class="logo"
+            alt="Hospital São Bento"
+        >
+
+        <p class="subtitulo">
+            Login
+        </p>
+
+
+        <!-- USUÁRIO -->
+
+        <div class="grupo">
+
+            <label>
+                👤 Usuário
+            </label>
+
+            <input
+                type="text"
+                id="usuario"
+                placeholder="Digite seu usuário"
+                autocomplete="username"
+            >
+
+        </div>
+
+
+        <!-- SENHA -->
+
+        <div class="grupo">
+
+            <label>
+                🔒 Senha
+            </label>
+
+            <input
+                type="password"
+                id="senha"
+                placeholder="Digite sua senha"
+                autocomplete="current-password"
+            >
+
+        </div>
+
+
+        <!-- BOTÃO -->
+
+        <button onclick="login()">
+
+            Entrar
+
+        </button>
+
+
+        <!-- RODAPÉ -->
+
+        <footer>
+
+            © 2026 Hospital São Bento
+
+            <br>
+
+            Fé • Cuidado • Vida
+
+        </footer>
+
+    </div>
+
+
+    <script>
+
+        async function login() {
+
+            const usuario =
+                document
+                    .getElementById("usuario")
+                    .value
+                    .trim();
+
+
+            const senha =
+                document
+                    .getElementById("senha")
+                    .value;
+
+
+            // =========================================
+            // VALIDAR CAMPOS
+            // =========================================
+
+            if (!usuario || !senha) {
+
+                alert(
+                    "Preencha usuário e senha."
+                );
+
+                return;
+
+            }
+
+
+            try {
+
+                // =====================================
+                // ENVIAR LOGIN PARA O BACKEND
+                // =====================================
+
+                const resposta =
+                    await fetch(
+                        "http://localhost:3000/login",
+                        {
+
+                            method: "POST",
+
+                            headers: {
+
+                                "Content-Type":
+                                    "application/json"
+
+                            },
+
+                            body:
+                                JSON.stringify({
+
+                                    usuario:
+                                        usuario,
+
+                                    senha:
+                                        senha
+
+                                })
+
+                        }
+                    );
+
+
+                // =====================================
+                // LER RESPOSTA
+                // =====================================
+
+                const data =
+                    await resposta.json();
+
+
+                // =====================================
+                // ERRO DO BACKEND
+                // =====================================
+
+                if (!resposta.ok) {
+
+                    throw new Error(
+
+                        data.erro ||
+                        "Erro ao realizar login."
+
+                    );
+
+                }
+
+
+                // =====================================
+                // VERIFICAR USUÁRIO
+                // =====================================
+
+                if (!data.usuario) {
+
+                    throw new Error(
+                        "Resposta inválida do servidor."
+                    );
+
+                }
+
+
+                // =====================================
+                // SALVAR USUÁRIO
+                // =====================================
+
+                localStorage.setItem(
+
+                    "usuario",
+
+                    JSON.stringify(
+                        data.usuario
+                    )
+
+                );
+
+
+                console.log(
+                    "Login realizado:",
+                    data.usuario
+                );
+
+
+                // =====================================
+                // REDIRECIONAMENTO POR CARGO
+                // =====================================
+
+                switch (data.usuario.tipo) {
+
+
+                    case "triagem":
+
+                        window.location.href =
+                            "triagem.html";
+
+                        break;
+
+
+                    case "medico":
+
+                        window.location.href =
+                            "medico.html";
+
+                        break;
+
+
+                    case "recepcao":
+
+                        window.location.href =
+                            "atendimento.html";
+
+                        break;
+
+
+                    case "medicacoes":
+
+                        window.location.href =
+                            "medicacoes.html";
+
+                        break;
+
+
+                    case "administrador":
+
+                        window.location.href =
+                            "atendimento.html";
+
+                        break;
+
+
+                    default:
+
+                        alert(
+                            "Tipo de usuário sem permissão."
+                        );
+
+                        break;
+
+                }
+
+
+            }
+
+            catch (erro) {
+
+                console.error(
+                    "ERRO NO LOGIN:",
+                    erro
+                );
+
+
+                alert(
+                    erro.message ||
+                    "Não foi possível realizar o login."
+                );
+
+            }
+
+        }
+
+
+        // =========================================
+        // PERMITIR ENTER PARA LOGAR
+        // =========================================
+
+        document
+            .getElementById("senha")
+            .addEventListener(
+                "keydown",
+                function(event) {
+
+                    if (event.key === "Enter") {
+
+                        login();
+
+                    }
+
+                }
+            );
+
+    </script>
+
+</body>
+
+</html>

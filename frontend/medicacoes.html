@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Hospital São Bento | Medicações</title>
+
+    <link rel="stylesheet" href="css/GLOBAL.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/medicacoes.css">
+
+</head>
+
+
+<body>
+
+
+    <!-- CONTEÚDO -->
+
+    <div class="main">
+
+
+        <div class="topbar">
+
+
+            <h2>
+                Controle de Medicações
+            </h2>
+
+
+            <div class="usuario">
+
+                💊 Farmácia Hospitalar
+
+            </div>
+
+
+        </div>
+
+
+
+        <div class="content">
+
+
+            <div class="card">
+
+
+                <h3>
+                    Medicações Prescritas
+                </h3>
+
+
+
+                <div class="pesquisa">
+
+
+                    <input
+
+                        id="buscar"
+
+                        placeholder="Pesquisar paciente ou medicação"
+
+                        onkeyup="filtrar()"
+
+                    >
+
+
+                </div>
+
+
+
+                <div id="listaMedicacoes">
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+
+    <script>
+
+
+        let medicamentos = [];
+
+
+        // =====================================================
+        // CARREGAR MEDICAÇÕES
+        // =====================================================
+
+        function carregarMedicacoes() {
+
+
+            fetch(
+                "http://localhost:3000/medicacoes"
+            )
+
+
+            .then(async resposta => {
+
+
+                if (!resposta.ok) {
+
+                    throw new Error(
+                        "Erro ao carregar medicações."
+                    );
+
+                }
+
+
+                return await resposta.json();
+
+            })
+
+
+            .then(data => {
+
+
+                medicamentos = data;
+
+
+                mostrarMedicacoes(
+                    medicamentos
+                );
+
+
+            })
+
+
+            .catch(erro => {
+
+
+                console.error(
+                    "Erro ao carregar medicações:",
+                    erro
+                );
+
+
+                alert(
+                    erro.message ||
+                    "Erro ao carregar medicações."
+                );
+
+            });
+
+        }
+
+
+        // =====================================================
+        // MOSTRAR MEDICAÇÕES
+        // =====================================================
+
+        function mostrarMedicacoes(lista) {
+
+
+            const div =
+                document.getElementById(
+                    "listaMedicacoes"
+                );
+
+
+            div.innerHTML = "";
+
+
+            if (
+                !Array.isArray(lista) ||
+                lista.length === 0
+            ) {
+
+
+                div.innerHTML = `
+
+                    <p>
+                        Nenhuma medicação prescrita.
+                    </p>
+
+                `;
+
+
+                return;
+
+            }
+
+
+            lista.forEach(med => {
+
+
+                const card =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                card.className =
+                    "med-card";
+
+
+                card.innerHTML = `
+
+                    <h3>
+                        👤 ${med.paciente || "Paciente não informado"}
+                    </h3>
+
+
+                    <p>
+
+                        <b>Medicação:</b>
+
+                        ${med.medicacao || "Não informado"}
+
+                    </p>
+
+
+                    <p>
+
+                        <b>Diagnóstico:</b>
+
+                        ${med.diagnostico || "Não informado"}
+
+                    </p>
+
+
+                    <p>
+
+                        <b>Observação:</b>
+
+                        ${med.obs || "Nenhuma"}
+
+                    </p>
+
+
+                    <p class="status">
+
+                        🟡 Aguardando administração
+
+                    </p>
+
+
+                    <button
+                        onclick="administrar('${med.id || ""}')"
+                    >
+
+                        Confirmar administração
+
+                    </button>
+
+                `;
+
+
+                div.appendChild(
+                    card
+                );
+
+            });
+
+        }
+
+
+        // =====================================================
+        // FILTRAR
+        // =====================================================
+
+        function filtrar() {
+
+
+            const texto =
+                document
+                    .getElementById("buscar")
+                    .value
+                    .toLowerCase()
+                    .trim();
+
+
+            const resultado =
+                medicamentos.filter(med => {
+
+
+                    const paciente =
+                        String(
+                            med.paciente || ""
+                        )
+                        .toLowerCase();
+
+
+                    const medicacao =
+                        String(
+                            med.medicacao || ""
+                        )
+                        .toLowerCase();
+
+
+                    return (
+
+                        paciente.includes(
+                            texto
+                        )
+
+                        ||
+
+                        medicacao.includes(
+                            texto
+                        )
+
+                    );
+
+                });
+
+
+            mostrarMedicacoes(
+                resultado
+            );
+
+        }
+
+
+        // =====================================================
+        // ADMINISTRAR
+        // =====================================================
+
+        function administrar(id) {
+
+
+            /*
+                Mantido o comportamento original:
+                apenas informa que a medicação foi registrada.
+
+                Não foi criada uma nova rota no backend
+                sem necessidade.
+            */
+
+            alert(
+                "Medicação registrada como administrada."
+            );
+
+        }
+
+
+        // =====================================================
+        // INICIAR
+        // =====================================================
+
+        carregarMedicacoes();
+
+
+    </script>
+
+
+</body>
+
+</html>

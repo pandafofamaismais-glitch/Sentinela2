@@ -1,0 +1,370 @@
+/*=========================================================
+            MEDICAÇÕES - PROJETO SENTINELA
+=========================================================*/
+
+/* Fundo */
+
+body{
+
+    background:linear-gradient(135deg,#F5F3FF,#F8FAFC);
+
+}
+
+/*=========================================================
+                    CONTAINER
+=========================================================*/
+
+.container{
+
+    max-width:1100px;
+
+    margin:40px auto;
+
+    background:#FFFFFF;
+
+    padding:35px;
+
+    border-radius:20px;
+
+    box-shadow:0 15px 40px rgba(0,0,0,.12);
+
+    border-top:8px solid #7C3AED;
+
+}
+
+/*=========================================================
+                    TÍTULO
+=========================================================*/
+
+.container h2{
+
+    text-align:center;
+
+    color:#6D28D9;
+
+    margin-bottom:35px;
+
+    font-size:30px;
+
+}
+
+/*=========================================================
+                LISTA DE MEDICAÇÕES
+=========================================================*/
+
+#listaMedicacoes{
+
+    display:grid;
+
+    grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+
+    gap:25px;
+
+}
+
+/*=========================================================
+                    CARD
+=========================================================*/
+
+.card{
+
+    background:#FFFFFF;
+
+    border-left:8px solid #7C3AED;
+
+    border-radius:18px;
+
+    padding:22px;
+
+    box-shadow:0 8px 18px rgba(0,0,0,.08);
+
+    transition:.3s;
+
+    position:relative;
+
+}
+
+.card:hover{
+
+    transform:translateY(-5px);
+
+    box-shadow:0 15px 30px rgba(0,0,0,.15);
+
+}
+
+/*=========================================================
+                ÍCONE
+=========================================================*/
+
+.card::before{
+
+    content:"💊";
+
+    position:absolute;
+
+    top:18px;
+
+    right:20px;
+
+    font-size:28px;
+
+}
+
+/*=========================================================
+                PACIENTE
+=========================================================*/
+
+.card h3{
+
+    color:#6D28D9;
+
+    margin-bottom:18px;
+
+    padding-right:40px;
+
+}
+
+/*=========================================================
+                INFORMAÇÕES
+=========================================================*/
+
+.card p{
+
+    margin-bottom:12px;
+
+    color:#475569;
+
+    line-height:1.6;
+
+}
+
+.card b{
+
+    color:#1F2937;
+
+}
+
+/*=========================================================
+            LINHA DECORATIVA
+=========================================================*/
+
+.card hr{
+
+    margin:15px 0;
+
+    border:none;
+
+    height:1px;
+
+    background:#E9D5FF;
+
+}
+
+/*=========================================================
+            ANIMAÇÃO
+=========================================================*/
+
+.card{
+
+    animation:fadeCard .45s ease;
+
+}
+
+@keyframes fadeCard{
+
+    from{
+
+        opacity:0;
+
+        transform:translateY(20px);
+
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:translateY(0);
+
+    }
+
+}
+
+/*=========================================================
+            MENSAGEM VAZIA
+=========================================================*/
+
+#listaMedicacoes p{
+
+    text-align:center;
+
+    color:#64748B;
+
+    font-size:16px;
+
+}
+
+/*=========================================================
+            RESPONSIVIDADE
+=========================================================*/
+
+@media(max-width:900px){
+
+.container{
+
+    margin:20px;
+
+    padding:25px;
+
+}
+
+#listaMedicacoes{
+
+    grid-template-columns:1fr;
+
+}
+
+}
+
+@media(max-width:600px){
+
+.container{
+
+    padding:20px;
+
+}
+
+.container h2{
+
+    font-size:24px;
+
+}
+
+.card{
+
+    padding:18px;
+
+}
+
+.card::before{
+
+    font-size:24px;
+
+}
+
+}
+
+/*=========================================================
+            ACESSIBILIDADE
+=========================================================*/
+
+.card:focus-within{
+
+    outline:3px solid #2563EB;
+
+    outline-offset:3px;
+
+}
+
+/*=========================================================
+            SCROLL SUAVE
+=========================================================*/
+
+html{
+
+    scroll-behavior:smooth;
+
+}
+
+
+.card h3{
+
+    color:#7C3AED;
+
+    margin-bottom:20px;
+
+}
+
+
+.pesquisa input{
+
+    width:100%;
+
+    padding:14px;
+
+    border-radius:12px;
+
+    border:1px solid #CBD5E1;
+
+    margin-bottom:25px;
+
+}
+
+
+
+
+.med-card{
+
+    background:#F8FAFC;
+
+    border-left:6px solid #7C3AED;
+
+    padding:20px;
+
+    border-radius:15px;
+
+    margin-bottom:20px;
+
+}
+
+
+
+.med-card h3{
+
+    color:#0F172A;
+
+}
+
+
+
+.med-card p{
+
+    margin:10px 0;
+
+}
+
+
+
+.status{
+
+    color:#CA8A04;
+
+    font-weight:bold;
+
+}
+
+
+
+.med-card button{
+
+    background:#7C3AED;
+
+    color:white;
+
+    border:none;
+
+    padding:12px 20px;
+
+    border-radius:10px;
+
+    cursor:pointer;
+
+}
+
+
+
+.med-card button:hover{
+
+    background:#6D28D9;
+
+}

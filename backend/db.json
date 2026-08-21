@@ -1,0 +1,189 @@
+{
+    "usuarios": [
+        {
+            "id": 1,
+            "usuario": "admin",
+            "senha": "$2b$10$n1/poyutmMzlgDnZMPjY5ex0lVYrl632wLDaIllJGRjyZ/E3P6QOq",
+            "tipo": "administrador",
+            "nome": "Administrador",
+            "criadoEm": "07/08/2026, 09:41:20"
+        },
+        {
+            "id": 2,
+            "usuario": "medico",
+            "senha": "$2b$10$n1/poyutmMzlgDnZMPjY5ex0lVYrl632wLDaIllJGRjyZ/E3P6QOq",
+            "tipo": "medico",
+            "nome": "Dr. Medico",
+            "criadoEm": "07/08/2026"
+        },
+        {
+            "id": 3,
+            "usuario": "medicacoes",
+            "senha": "$2b$10$n1/poyutmMzlgDnZMPjY5ex0lVYrl632wLDaIllJGRjyZ/E3P6QOq",
+            "tipo": "medicacoes",
+            "nome": "Medicações",
+            "criadoEm": "07/08/2026"
+        },
+        {
+            "id": 4,
+            "usuario": "recepcao",
+            "senha": "$2b$10$n1/poyutmMzlgDnZMPjY5ex0lVYrl632wLDaIllJGRjyZ/E3P6QOq",
+            "tipo": "recepcao",
+            "nome": "Recepção",
+            "criadoEm": "07/08/2026"
+        },
+        {
+            "id": 5,
+            "usuario": "triagem",
+            "senha": "$2b$10$n1/poyutmMzlgDnZMPjY5ex0lVYrl632wLDaIllJGRjyZ/E3P6QOq",
+            "tipo": "triagem",
+            "nome": "Triagem",
+            "criadoEm": "07/08/2026"
+        }
+    ],
+    "pacientes": [],
+    "triagens": [],
+    "consultas": [],
+    "historico": [
+        {
+            "id": 1786111166520,
+            "acao": "Login realizado: medico",
+            "usuario": "medico",
+            "data": "07/08/2026, 10:59:26"
+        },
+        {
+            "id": 1786111174464,
+            "acao": "Login realizado: medicacoes",
+            "usuario": "medicacoes",
+            "data": "07/08/2026, 10:59:34"
+        },
+        {
+            "id": 1786111182153,
+            "acao": "Login realizado: recepcao",
+            "usuario": "recepcao",
+            "data": "07/08/2026, 10:59:42"
+        },
+        {
+            "id": 1786111174464,
+            "acao": "Login realizado: triagem",
+            "usuario": "triagem",
+            "data": "07/08/2026, 10:59:34"
+        },
+        {
+            "id": 1786111261633,
+            "acao": "Login realizado: medico",
+            "usuario": "medico",
+            "data": "07/08/2026, 11:01:01"
+        },
+        {
+            "id": 1786111821332,
+            "acao": "Login realizado: admin",
+            "usuario": "admin",
+            "data": "07/08/2026, 11:10:21"
+        },
+        {
+            "id": 1786111857151,
+            "acao": "Login realizado: admin",
+            "usuario": "admin",
+            "data": "07/08/2026, 11:10:57"
+        },
+        {
+            "id": 1786111878338,
+            "acao": "Login realizado: medico",
+            "usuario": "medico",
+            "data": "07/08/2026, 11:11:18"
+        },
+        {
+            "id": 1786111971686,
+            "acao": "Login realizado: medico",
+            "usuario": "medico",
+            "data": "07/08/2026, 11:12:51"
+        },
+        {
+            "id": 1786112220498,
+            "acao": "Login realizado: admin",
+            "usuario": "admin",
+            "data": "07/08/2026, 11:17:00"
+        },
+        {
+            "id": 1786111174464,
+            "acao": "Login realizado: triagem",
+            "usuario": "triagem",
+            "data": "07/08/2026, 10:59:34"
+        },
+        {
+            "id": 1786116633936,
+            "acao": "Login realizado: admin",
+            "usuario": "admin",
+            "data": "07/08/2026, 12:30:33"
+        },
+        {
+            "id": 1786116653072,
+            "acao": "Login realizado: medico",
+            "usuario": "medico",
+            "data": "07/08/2026, 12:30:53"
+        },
+        {
+            "id": 1786116752208,
+            "acao": "Login realizado: medico",
+            "usuario": "medico",
+            "data": "07/08/2026, 12:32:32"
+        },
+        {
+            "id": 1786370279393,
+            "acao": "Login realizado: admin",
+            "usuario": "admin",
+            "data": "10/08/2026, 10:57:59"
+        },
+        {
+            "id": 1786370357981,
+            "acao": "Login realizado: triagem",
+            "usuario": "triagem",
+            "data": "10/08/2026, 10:59:17"
+        },
+        {
+            "id": 1786371858192,
+            "acao": "Login realizado: triagem",
+            "usuario": "triagem",
+            "data": "10/08/2026, 11:24:18"
+        },
+        {
+            "id": 1786545450275,
+            "acao": "Login realizado: medico",
+            "usuario": "medico",
+            "data": "12/08/2026, 11:37:30"
+        },
+        {
+            "id": 1786631236176,
+            "acao": "Login realizado: triagem",
+            "usuario": "triagem",
+            "data": "13/08/2026, 11:27:16"
+        },
+        {
+            "id": 1787234196627,
+            "acao": "Login realizado: triagem",
+            "usuario": "triagem",
+            "data": "20/08/2026, 10:56:36"
+        },
+        {
+            "id": 1787234735272,
+            "acao": "Login realizado: medico",
+            "usuario": "medico",
+            "data": "20/08/2026, 11:05:35"
+        },
+        {
+            "id": 1787235042502,
+            "acao": "Login realizado: triagem",
+            "usuario": "triagem",
+            "data": "20/08/2026, 11:10:42"
+        }
+    ],
+    "medicamentos": [
+        "Dipirona",
+        "Paracetamol",
+        "Ibuprofeno",
+        "Amoxicilina",
+        "Omeprazol",
+        "Loratadina"
+    ]
+}
