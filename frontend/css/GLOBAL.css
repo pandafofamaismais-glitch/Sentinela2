@@ -1610,31 +1610,21 @@ footer {
 }
 
 /*======================================
-LOGO
+LOGO DA TV
 ======================================*/
 
-.logo {
-
-    width: 220px;
-
+.tv-logo {
+    width: 300px;
     max-width: 80%;
-
     height: auto;
-
     display: block;
-
-    margin: 0 auto;
-
+    margin: 20px auto;
 }
 
 @media(max-width:768px) {
 
-    .logo {
-
-        width: 170px;
-
+    .tv-logo {
+        width: 200px;
     }
 
 }
-
-
