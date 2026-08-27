@@ -96,7 +96,9 @@
 <body>
 
 
+    <!-- ===================================================== -->
     <!-- PAINEL DA FILA -->
+    <!-- ===================================================== -->
 
     <div class="container">
 
@@ -169,7 +171,9 @@
     </div>
 
 
+    <!-- ===================================================== -->
     <!-- CONTEÚDO PRINCIPAL -->
+    <!-- ===================================================== -->
 
     <div class="main">
 
@@ -327,10 +331,60 @@
 
 
         // =====================================================
+        // API FETCH
+        // =====================================================
+
+        async function apiFetch(url, options = {}) {
+
+            const token =
+                localStorage.getItem("token") ||
+                localStorage.getItem("authToken") ||
+                localStorage.getItem("accessToken");
+
+
+            const headers = {
+                ...(options.headers || {})
+            };
+
+
+            /*
+             * Se existir token salvo no navegador,
+             * envia para o backend.
+             */
+
+            if (token) {
+
+                headers["Authorization"] =
+                    `Bearer ${token}`;
+
+            }
+
+
+            /*
+             * credentials: "include" permite enviar
+             * cookies de autenticação, caso o sistema
+             * utilize sessão por cookie.
+             */
+
+            return fetch(url, {
+
+                ...options,
+
+                headers: headers,
+
+                credentials: "include"
+
+            });
+
+        }
+
+
+        // =====================================================
         // CLASSIFICAÇÃO DE RISCO
         // =====================================================
 
         function classificarRisco(sintoma, temp) {
+
 
             if (temp >= 39) {
 
@@ -377,60 +431,102 @@
         // SALVAR TRIAGEM
         // =====================================================
 
-        function salvar() {
+        async function salvar() {
+
+
+            const nome =
+                document
+                    .getElementById("nome")
+                    .value
+                    .trim();
+
+
+            const sintoma =
+                document
+                    .getElementById("sintoma")
+                    .value;
+
+
+            const temperatura =
+                Number(
+                    document
+                        .getElementById("temp")
+                        .value
+                );
+
+
+            const pressao =
+                document
+                    .getElementById("pressao")
+                    .value
+                    .trim();
+
+
+            const batimentos =
+                document
+                    .getElementById("batimentos")
+                    .value;
+
+
+            const saturacao =
+                document
+                    .getElementById("saturacao")
+                    .value;
+
+
+            const alergia =
+                document
+                    .getElementById("alergia")
+                    .value
+                    .trim();
+
+
+            const observacao =
+                document
+                    .getElementById("observacao")
+                    .value
+                    .trim();
+
+
+            // =================================================
+            // VALIDAÇÃO
+            // =================================================
+
+            if (!nome) {
+
+                alert("Digite o nome do paciente.");
+
+                return;
+
+            }
+
+
+            if (!sintoma) {
+
+                alert("Selecione o sintoma.");
+
+                return;
+
+            }
 
 
             const dados = {
 
-                nome:
-                    document
-                        .getElementById("nome")
-                        .value
-                        .trim(),
+                nome: nome,
 
+                sintoma: sintoma,
 
-                sintoma:
-                    document
-                        .getElementById("sintoma")
-                        .value,
+                temperatura: temperatura,
 
+                pressao: pressao,
 
-                temperatura:
-                    Number(
-                        document
-                            .getElementById("temp")
-                            .value
-                    ),
+                batimentos: batimentos,
 
+                saturacao: saturacao,
 
-                pressao:
-                    document
-                        .getElementById("pressao")
-                        .value,
+                alergia: alergia,
 
-
-                batimentos:
-                    document
-                        .getElementById("batimentos")
-                        .value,
-
-
-                saturacao:
-                    document
-                        .getElementById("saturacao")
-                        .value,
-
-
-                alergia:
-                    document
-                        .getElementById("alergia")
-                        .value,
-
-
-                observacao:
-                    document
-                        .getElementById("observacao")
-                        .value
+                observacao: observacao
 
             };
 
@@ -442,46 +538,78 @@
                 );
 
 
-            fetch("/triagem", {
-
-                method: "POST",
-
-                headers: {
-
-                    "Content-Type":
-                        "application/json"
-
-                },
-
-                body:
-                    JSON.stringify(dados)
-
-            })
+            try {
 
 
-            .then(async resposta => {
+                // =================================================
+                // ENVIA PARA O BACKEND
+                // =================================================
 
-                const data =
-                    await resposta.json();
+                const resposta =
+                    await apiFetch(
+                        "/triagem",
+                        {
+
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            body:
+                                JSON.stringify(
+                                    dados
+                                )
+
+                        }
+                    );
 
 
-                if (!resposta.ok) {
+                let data = {};
 
-                    throw new Error(
-                        data.erro ||
-                        "Erro ao salvar triagem."
+
+                try {
+
+                    data =
+                        await resposta.json();
+
+                } catch (erroJson) {
+
+                    console.error(
+                        "Servidor não retornou JSON:",
+                        erroJson
                     );
 
                 }
 
 
-                return data;
-
-            })
+                if (!resposta.ok) {
 
 
-            .then(() => {
+                    /*
+                     * Mostra a mensagem verdadeira
+                     * enviada pelo backend.
+                     */
 
+                    throw new Error(
+
+                        data.erro ||
+
+                        data.error ||
+
+                        data.mensagem ||
+
+                        `Erro HTTP ${resposta.status}`
+
+                    );
+
+                }
+
+
+                // =================================================
+                // MOSTRAR RESULTADO
+                // =================================================
 
                 const div =
                     document.getElementById(
@@ -504,16 +632,59 @@
                 );
 
 
-                // Atualiza a fila depois
-                // de salvar a triagem.
+                // =================================================
+                // LIMPAR FORMULÁRIO
+                // =================================================
+
+                document
+                    .getElementById("nome")
+                    .value = "";
+
+
+                document
+                    .getElementById("sintoma")
+                    .value = "";
+
+
+                document
+                    .getElementById("temp")
+                    .value = "";
+
+
+                document
+                    .getElementById("pressao")
+                    .value = "";
+
+
+                document
+                    .getElementById("batimentos")
+                    .value = "";
+
+
+                document
+                    .getElementById("saturacao")
+                    .value = "";
+
+
+                document
+                    .getElementById("alergia")
+                    .value = "";
+
+
+                document
+                    .getElementById("observacao")
+                    .value = "";
+
+
+                // =================================================
+                // ATUALIZAR FILA
+                // =================================================
 
                 carregarPacientes();
 
 
-            })
+            } catch (erro) {
 
-
-            .catch(erro => {
 
                 console.error(
                     "Erro ao salvar triagem:",
@@ -523,10 +694,10 @@
 
                 alert(
                     erro.message ||
-                    "Erro ao salvar."
+                    "Erro ao salvar triagem."
                 );
 
-            });
+            }
 
         }
 
@@ -535,29 +706,50 @@
         // CARREGAR FILA
         // =====================================================
 
-        function carregarPacientes() {
+        async function carregarPacientes() {
 
 
-            fetch("/pacientes")
+            try {
 
 
-            .then(async resposta => {
+                const resposta =
+                    await apiFetch(
+                        "/pacientes"
+                    );
 
-                if (!resposta.ok) {
 
-                    throw new Error(
-                        "Erro ao carregar pacientes."
+                let pacientes = [];
+
+
+                try {
+
+                    pacientes =
+                        await resposta.json();
+
+                } catch (erroJson) {
+
+                    console.error(
+                        "Resposta inválida do servidor:",
+                        erroJson
                     );
 
                 }
 
 
-                return await resposta.json();
-
-            })
+                if (!resposta.ok) {
 
 
-            .then(pacientes => {
+                    throw new Error(
+
+                        pacientes.erro ||
+
+                        pacientes.error ||
+
+                        "Erro ao carregar pacientes."
+
+                    );
+
+                }
 
 
                 const div =
@@ -567,25 +759,29 @@
 
 
                 /*
-                    SOMENTE PACIENTES COM STATUS TRIAGEM.
-
-                    Atendimento cadastra.
-                    Depois o paciente entra na fila da triagem.
-                */
+                 * SOMENTE PACIENTES COM STATUS TRIAGEM.
+                 */
 
                 const fila =
-                    pacientes.filter(
-                        paciente =>
-                            paciente.status === "triagem"
-                    );
+                    Array.isArray(pacientes)
+
+                        ? pacientes.filter(
+                            paciente =>
+                                paciente.status ===
+                                "triagem"
+                        )
+
+                        : [];
 
 
                 if (fila.length === 0) {
+
 
                     div.innerHTML =
                         "<p style='color:#888; text-align:center;'>" +
                         "Nenhum paciente aguardando." +
                         "</p>";
+
 
                     return;
 
@@ -595,105 +791,129 @@
                 div.innerHTML = "";
 
 
-                fila.forEach(paciente => {
+                fila.forEach(
+                    paciente => {
 
 
-                    const item =
-                        document.createElement(
-                            "div"
-                        );
-
-
-                    item.className =
-                        "fila-item";
-
-
-                    const esquerda =
-                        document.createElement(
-                            "div"
-                        );
-
-
-                    const nome =
-                        document.createElement(
-                            "strong"
-                        );
-
-
-                    nome.textContent =
-                        paciente.nome;
-
-
-                    const quebra =
-                        document.createElement(
-                            "br"
-                        );
-
-
-                    const informacoes =
-                        document.createElement(
-                            "small"
-                        );
-
-
-                    informacoes.textContent =
-                        "CPF: " +
-                        (paciente.cpf || "-") +
-                        " | Tipo: " +
-                        (paciente.tipo || "-");
-
-
-                    esquerda.appendChild(nome);
-
-                    esquerda.appendChild(quebra);
-
-                    esquerda.appendChild(informacoes);
-
-
-                    const botao =
-                        document.createElement(
-                            "button"
-                        );
-
-
-                    botao.className =
-                        "btn-tv";
-
-
-                    botao.textContent =
-                        "📺 Chamar na TV";
-
-
-                    botao.onclick =
-                        function() {
-
-                            chamarNaTV(
-                                paciente.nome
+                        const item =
+                            document.createElement(
+                                "div"
                             );
 
-                        };
+
+                        item.className =
+                            "fila-item";
 
 
-                    item.appendChild(
-                        esquerda
-                    );
+                        // =================================================
+                        // INFORMAÇÕES
+                        // =================================================
+
+                        const esquerda =
+                            document.createElement(
+                                "div"
+                            );
 
 
-                    item.appendChild(
-                        botao
-                    );
+                        const nome =
+                            document.createElement(
+                                "strong"
+                            );
 
 
-                    div.appendChild(
-                        item
-                    );
-
-                });
-
-            })
+                        nome.textContent =
+                            paciente.nome ||
+                            "Paciente";
 
 
-            .catch(erro => {
+                        const quebra =
+                            document.createElement(
+                                "br"
+                            );
+
+
+                        const informacoes =
+                            document.createElement(
+                                "small"
+                            );
+
+
+                        informacoes.textContent =
+                            "CPF: " +
+                            (
+                                paciente.cpf ||
+                                "-"
+                            ) +
+                            " | Tipo: " +
+                            (
+                                paciente.tipo ||
+                                "-"
+                            );
+
+
+                        esquerda.appendChild(
+                            nome
+                        );
+
+
+                        esquerda.appendChild(
+                            quebra
+                        );
+
+
+                        esquerda.appendChild(
+                            informacoes
+                        );
+
+
+                        // =================================================
+                        // BOTÃO TV
+                        // =================================================
+
+                        const botao =
+                            document.createElement(
+                                "button"
+                            );
+
+
+                        botao.className =
+                            "btn-tv";
+
+
+                        botao.textContent =
+                            "📺 Chamar na TV";
+
+
+                        botao.onclick =
+                            function() {
+
+                                chamarNaTV(
+                                    paciente.nome
+                                );
+
+                            };
+
+
+                        item.appendChild(
+                            esquerda
+                        );
+
+
+                        item.appendChild(
+                            botao
+                        );
+
+
+                        div.appendChild(
+                            item
+                        );
+
+
+                    }
+                );
+
+
+            } catch (erro) {
 
 
                 console.error(
@@ -707,11 +927,17 @@
                         "fila-pacientes"
                     )
                     .innerHTML =
+
                     "<p style='color:red;'>" +
-                    "Erro ao carregar pacientes." +
+
+                    (
+                        erro.message ||
+                        "Erro ao carregar pacientes."
+                    ) +
+
                     "</p>";
 
-            });
+            }
 
         }
 
@@ -720,73 +946,96 @@
         // CHAMAR PACIENTE NA TV
         // =====================================================
 
-        function chamarNaTV(nome) {
+        async function chamarNaTV(nome) {
 
 
-            fetch("/tv/chamar", {
+            if (!nome) {
 
-                method: "POST",
+                alert(
+                    "Nome do paciente não encontrado."
+                );
 
-                headers: {
+                return;
 
-                    "Content-Type":
-                        "application/json"
-
-                },
-
-                body:
-                    JSON.stringify({
-
-                        localTipo:
-                            "GUICHÊ",
-
-                        localNumero:
-                            "01",
-
-                        paciente:
-                            nome
-
-                    })
-
-            })
+            }
 
 
-            .then(async resposta => {
+            try {
 
 
-                const data =
-                    await resposta.json();
+                const resposta =
+                    await apiFetch(
+                        "/tv/chamar",
+                        {
+
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            body:
+                                JSON.stringify({
+
+                                    localTipo:
+                                        "GUICHÊ",
+
+                                    localNumero:
+                                        "01",
+
+                                    paciente:
+                                        nome
+
+                                })
+
+                        }
+                    );
 
 
-                if (!resposta.ok) {
+                let data = {};
 
-                    throw new Error(
-                        data.erro ||
-                        "Erro ao chamar paciente."
+
+                try {
+
+                    data =
+                        await resposta.json();
+
+                } catch (erroJson) {
+
+                    console.error(
+                        "Resposta inválida:",
+                        erroJson
                     );
 
                 }
 
 
-                return data;
-
-            })
+                if (!resposta.ok) {
 
 
-            .then(() => {
+                    throw new Error(
+
+                        data.erro ||
+
+                        data.error ||
+
+                        data.mensagem ||
+
+                        `Erro HTTP ${resposta.status}`
+
+                    );
+
+                }
 
 
                 alert(
-                    "✅ " +
                     nome +
                     " foi chamado na TV para o Guichê 01!"
                 );
 
 
-            })
-
-
-            .catch(erro => {
+            } catch (erro) {
 
 
                 console.error(
@@ -796,11 +1045,14 @@
 
 
                 alert(
+
                     erro.message ||
+
                     "Erro ao chamar paciente na TV."
+
                 );
 
-            });
+            }
 
         }
 
@@ -811,7 +1063,15 @@
 
         carregarPacientes();
 
-        setInterval(carregarPacientes, 10000);
+
+        // =====================================================
+        // ATUALIZAR FILA AUTOMATICAMENTE
+        // =====================================================
+
+        setInterval(
+            carregarPacientes,
+            10000
+        );
 
 
     </script>
