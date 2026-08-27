@@ -96,13 +96,7 @@
 <body>
 
 
-    <!--
-        PAINEL DA FILA
-
-        ESTE PAINEL FICA.
-        Ele mostra somente os pacientes que estão
-        aguardando a triagem.
-    -->
+    <!-- PAINEL DA FILA -->
 
     <div class="container">
 
@@ -127,7 +121,7 @@
         </div>
 
 
-        <!-- FILA DE PACIENTES de Atendimento criada para mostrar quem pode ser chamar na TV-->
+        <!-- FILA DE PACIENTES -->
 
         <div class="pacientes-fila">
 
@@ -174,7 +168,8 @@
 
     </div>
 
-    <!-- CONTEÚDO -->
+
+    <!-- CONTEÚDO PRINCIPAL -->
 
     <div class="main">
 
@@ -447,24 +442,21 @@
                 );
 
 
-            fetch(
-                "http://localhost:3000/triagem",
-                {
+            fetch("/triagem", {
 
-                    method: "POST",
+                method: "POST",
 
-                    headers: {
+                headers: {
 
-                        "Content-Type":
-                            "application/json"
+                    "Content-Type":
+                        "application/json"
 
-                    },
+                },
 
-                    body:
-                        JSON.stringify(dados)
+                body:
+                    JSON.stringify(dados)
 
-                }
-            )
+            })
 
 
             .then(async resposta => {
@@ -546,9 +538,7 @@
         function carregarPacientes() {
 
 
-            fetch(
-                "http://localhost:3000/pacientes"
-            )
+            fetch("/pacientes")
 
 
             .then(async resposta => {
@@ -674,18 +664,6 @@
                         "📺 Chamar na TV";
 
 
-                    /*
-                        CORREÇÃO IMPORTANTE:
-
-                        Antes estava sendo enviado:
-
-                        p.tipo
-
-                        Agora é enviado:
-
-                        paciente.nome
-                    */
-
                     botao.onclick =
                         function() {
 
@@ -745,35 +723,32 @@
         function chamarNaTV(nome) {
 
 
-            fetch(
-                "http://localhost:3000/tv/chamar",
-                {
+            fetch("/tv/chamar", {
 
-                    method: "POST",
+                method: "POST",
 
-                    headers: {
+                headers: {
 
-                        "Content-Type":
-                            "application/json"
+                    "Content-Type":
+                        "application/json"
 
-                    },
+                },
 
-                    body:
-                        JSON.stringify({
+                body:
+                    JSON.stringify({
 
-                            localTipo:
-                                "GUICHÊ",
+                        localTipo:
+                            "GUICHÊ",
 
-                            localNumero:
-                                "01",
+                        localNumero:
+                            "01",
 
-                            paciente:
-                                nome
+                        paciente:
+                            nome
 
-                        })
+                    })
 
-                }
-            )
+            })
 
 
             .then(async resposta => {
@@ -836,7 +811,6 @@
 
         carregarPacientes();
 
-        // Atualizar a lista automaticamente a cada 10 segundos
         setInterval(carregarPacientes, 10000);
 
 
