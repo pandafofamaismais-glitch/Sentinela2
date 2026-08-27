@@ -11,16 +11,12 @@
 
 
     <style>
+
         * {
-
             box-sizing: border-box;
-
             margin: 0;
-
             padding: 0;
-
             font-family: Arial, sans-serif;
-
         }
 
 
@@ -124,7 +120,9 @@
         }
 
 
-        /* Painel esquerdo */
+        /* =========================
+           PAINEL ESQUERDO
+        ========================== */
 
         .local-box {
 
@@ -159,7 +157,9 @@
         }
 
 
-        /* Histórico */
+        /* =========================
+           HISTÓRICO
+        ========================== */
 
         .history-box {
 
@@ -210,7 +210,9 @@
         }
 
 
-        /* Painel direito */
+        /* =========================
+           PAINEL DIREITO
+        ========================== */
 
         .patient-box {
 
@@ -234,11 +236,30 @@
         }
 
 
-        /* Logo */
+        /* =========================
+           LOGO
+        ========================== */
 
         .logo-box {
 
             flex: 1;
+
+        }
+
+
+        .tv-logo {
+
+            width: 180px;
+
+            max-width: 180px;
+
+            height: auto;
+
+            object-fit: contain;
+
+            display: block;
+
+            margin: 10px auto;
 
         }
 
@@ -256,7 +277,9 @@
         }
 
 
-        /* Animação */
+        /* =========================
+           ANIMAÇÃO
+        ========================== */
 
         @keyframes flash {
 
@@ -282,6 +305,37 @@
                 flash 0.5s ease 3;
 
         }
+
+
+        /* =========================
+           RESPONSIVIDADE
+        ========================== */
+
+        @media (max-width: 768px) {
+
+            .tv-logo {
+
+                width: 150px;
+
+                max-width: 150px;
+
+            }
+
+        }
+
+
+        @media (max-width: 480px) {
+
+            .tv-logo {
+
+                width: 130px;
+
+                max-width: 130px;
+
+            }
+
+        }
+
     </style>
 
 </head>
@@ -293,7 +347,9 @@
     <div class="tv-container">
 
 
-        <!-- PAINEL ESQUERDO -->
+        <!-- =========================
+             PAINEL ESQUERDO
+        ========================== -->
 
         <div class="left-painel">
 
@@ -301,12 +357,18 @@
             <div class="box local-box">
 
 
-                <div class="box-title" id="local-type">
+                <div
+                    class="box-title"
+                    id="local-type"
+                >
                     GUICHÊ
                 </div>
 
 
-                <div class="local-number" id="local-number">
+                <div
+                    class="local-number"
+                    id="local-number"
+                >
                     --
                 </div>
 
@@ -314,6 +376,7 @@
             </div>
 
 
+            <!-- HISTÓRICO -->
 
             <div class="box history-box">
 
@@ -334,13 +397,19 @@
         </div>
 
 
-
-        <!-- PAINEL DIREITO -->
+        <!-- =========================
+             PAINEL DIREITO
+        ========================== -->
 
         <div class="right-painel">
 
 
-            <div class="box patient-box" id="patient-box">
+            <!-- PACIENTE -->
+
+            <div
+                class="box patient-box"
+                id="patient-box"
+            >
 
 
                 <div class="box-title">
@@ -350,7 +419,10 @@
                 </div>
 
 
-                <div class="patient-name" id="patient-name">
+                <div
+                    class="patient-name"
+                    id="patient-name"
+                >
 
                     AGUARDANDO...
 
@@ -360,14 +432,20 @@
             </div>
 
 
+            <!-- LOGO -->
 
             <div class="box logo-box">
-                   <<img src="imagens/logo.png" alt="Logo"
-                   class="tv-logo"
-            alt="Hospital São Bento"
-        >
+
+
+                <img
+                    src="imagens/logo.png"
+                    alt="Hospital São Bento"
+                    class="tv-logo"
+                >
+
 
                 <div class="logo-text">
+
                     Hospital São Bento
 
                 </div>
@@ -382,9 +460,7 @@
     </div>
 
 
-
     <script>
-
 
         let ultimoId = null;
 
@@ -396,9 +472,7 @@
         function atualizar() {
 
 
-            fetch(
-                "http://localhost:3000/tv/chamada"
-            )
+            fetch("/tv/chamada")
 
 
                 .then(async resposta => {
@@ -414,6 +488,7 @@
 
 
                     return await resposta.json();
+
 
                 })
 
@@ -556,6 +631,7 @@
 
                 .catch(erro => {
 
+
                     console.error(
                         "Erro ao buscar chamada:",
                         erro
@@ -566,17 +642,17 @@
         }
 
 
- 
-  // ATUALIZAÇÃO AUTOMÁTICA
+        // =====================================================
+        // ATUALIZAÇÃO AUTOMÁTICA
+        // =====================================================
+
+        atualizar();
 
 
-atualizar();
-
-
-setInterval(
-    atualizar,
-    2000
-);
+        setInterval(
+            atualizar,
+            2000
+        );
 
     </script>
 
