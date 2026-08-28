@@ -19,7 +19,6 @@ const app = express();
 
 const PORT = process.env.PORT || 3000;
 
-
 // =========================================================
 // CONFIGURAÇÕES
 // =========================================================
@@ -34,7 +33,6 @@ app.use(
     })
 );
 
-
 // =========================================================
 // FRONTEND
 // =========================================================
@@ -45,13 +43,10 @@ const FRONTEND_FOLDER = path.join(
 );
 
 if (fs.existsSync(FRONTEND_FOLDER)) {
-
     app.use(
         express.static(FRONTEND_FOLDER)
     );
-
 }
-
 
 // =========================================================
 // UPLOADS
@@ -63,21 +58,18 @@ const UPLOAD_FOLDER = path.join(
 );
 
 if (!fs.existsSync(UPLOAD_FOLDER)) {
-
     fs.mkdirSync(
         UPLOAD_FOLDER,
         {
             recursive: true
         }
     );
-
 }
 
 app.use(
     "/uploads",
     express.static(UPLOAD_FOLDER)
 );
-
 
 // =========================================================
 // MULTER
@@ -96,9 +88,10 @@ const storage = multer.diskStorage({
 
     filename: (req, file, cb) => {
 
-        const extensao = path.extname(
-            file.originalname
-        );
+        const extensao =
+            path.extname(
+                file.originalname
+            );
 
         const nome =
             Date.now() +
@@ -116,7 +109,6 @@ const storage = multer.diskStorage({
     }
 
 });
-
 
 const upload = multer({
 
@@ -165,7 +157,6 @@ const upload = multer({
 
 });
 
-
 // =========================================================
 // BANCO DE DADOS
 // =========================================================
@@ -175,14 +166,9 @@ const DB_FILE = path.join(
     "db.json"
 );
 
-
 function criarBanco() {
 
-    if (
-        !fs.existsSync(
-            DB_FILE
-        )
-    ) {
+    if (!fs.existsSync(DB_FILE)) {
 
         const bancoInicial = {
 
@@ -210,60 +196,91 @@ function criarBanco() {
         };
 
         fs.writeFileSync(
-
             DB_FILE,
-
             JSON.stringify(
                 bancoInicial,
                 null,
                 4
             )
-
         );
 
     }
 
 }
 
-
 criarBanco();
 
+// =========================================================
+// LER BANCO
+// =========================================================
 
 function readDB() {
 
-    const dados =
-        fs.readFileSync(
-            DB_FILE,
-            "utf8"
+    try {
+
+        const dados =
+            fs.readFileSync(
+                DB_FILE,
+                "utf8"
+            );
+
+        const db =
+            JSON.parse(
+                dados
+            );
+
+        db.usuarios =
+            Array.isArray(db.usuarios)
+                ? db.usuarios
+                : [];
+
+        db.pacientes =
+            Array.isArray(db.pacientes)
+                ? db.pacientes
+                : [];
+
+        db.triagens =
+            Array.isArray(db.triagens)
+                ? db.triagens
+                : [];
+
+        db.consultas =
+            Array.isArray(db.consultas)
+                ? db.consultas
+                : [];
+
+        db.historico =
+            Array.isArray(db.historico)
+                ? db.historico
+                : [];
+
+        db.medicamentos =
+            Array.isArray(db.medicamentos)
+                ? db.medicamentos
+                : [];
+
+        return db;
+
+    }
+
+    catch (erro) {
+
+        console.error(
+            "ERRO AO LER BANCO:",
+            erro
         );
 
-    const db =
-        JSON.parse(
-            dados
+        throw new Error(
+            "Não foi possível ler o banco de dados."
         );
 
-    db.usuarios =
-        db.usuarios || [];
-
-    db.pacientes =
-        db.pacientes || [];
-
-    db.triagens =
-        db.triagens || [];
-
-    db.consultas =
-        db.consultas || [];
-
-    db.historico =
-        db.historico || [];
-
-    db.medicamentos =
-        db.medicamentos || [];
-
-    return db;
+    }
 
 }
 
+// =========================================================
+// ESCREVER BANCO
+// =========================================================
 
 function writeDB(db) {
 
@@ -280,7 +297,6 @@ function writeDB(db) {
     );
 
 }
-
 
 // =========================================================
 // FUNÇÕES AUXILIARES
@@ -301,7 +317,6 @@ function gerarProntuario() {
 
 }
 
-
 function agora() {
 
     return new Date()
@@ -310,7 +325,6 @@ function agora() {
         );
 
 }
-
 
 function normalizarCPF(cpf) {
 
@@ -324,38 +338,53 @@ function normalizarCPF(cpf) {
 
 }
 
+// =========================================================
+// HISTÓRICO
+// =========================================================
 
 function registrarHistorico(
     acao,
     usuario
 ) {
 
-    const db =
-        readDB();
+    try {
 
-    db.historico.push({
+        const db =
+            readDB();
 
-        id:
-            Date.now(),
+        db.historico.push({
 
-        acao:
-            acao,
+            id:
+                Date.now(),
 
-        usuario:
-            usuario ||
-            "sistema",
+            acao:
+                acao,
 
-        data:
-            agora()
+            usuario:
+                usuario ||
+                "sistema",
 
-    });
+            data:
+                agora()
 
-    writeDB(
-        db
-    );
+        });
+
+        writeDB(
+            db
+        );
+
+    }
+
+    catch (erro) {
+
+        console.error(
+            "ERRO AO REGISTRAR HISTÓRICO:",
+            erro
+        );
+
+    }
 
 }
-
 
 // =========================================================
 // SEGURANÇA
@@ -370,6 +399,54 @@ async function criarSenha(senha) {
 
 }
 
+// =========================================================
+// OBTER TIPO DO USUÁRIO
+// =========================================================
+
+function obterTipoUsuario(req) {
+
+    return (
+
+        req.headers.tipo ||
+
+        req.headers["x-tipo"] ||
+
+        req.body?.tipoUsuario ||
+
+        ""
+
+    )
+        .toString()
+        .trim()
+        .toLowerCase();
+
+}
+
+// =========================================================
+// OBTER USUÁRIO LOGADO
+// =========================================================
+
+function obterUsuario(req) {
+
+    return (
+
+        req.headers.usuario ||
+
+        req.headers["x-usuario"] ||
+
+        req.body?.usuario ||
+
+        "sistema"
+
+    )
+        .toString()
+        .trim();
+
+}
+
+// =========================================================
+// PERMISSÕES
+// =========================================================
 
 function verificarPermissao(cargos) {
 
@@ -380,21 +457,35 @@ function verificarPermissao(cargos) {
     ) => {
 
         const tipo =
-            req.headers.tipo;
+            obterTipoUsuario(req);
 
         if (
             !tipo ||
-            !cargos.includes(
-                tipo
-            )
+            !cargos.includes(tipo)
         ) {
+
+            console.log(
+                "ACESSO NEGADO:",
+                {
+                    tipo,
+                    rota: req.path,
+                    metodo: req.method,
+                    permitidos: cargos
+                }
+            );
 
             return res
                 .status(403)
                 .json({
 
                     erro:
-                        "Acesso negado para este usuário."
+                        "Acesso negado para este usuário.",
+
+                    tipoRecebido:
+                        tipo || null,
+
+                    cargosPermitidos:
+                        cargos
 
                 });
 
@@ -405,7 +496,6 @@ function verificarPermissao(cargos) {
     };
 
 }
-
 
 // =========================================================
 // ADMINISTRADOR INICIAL
@@ -466,7 +556,6 @@ async function criarAdministradorInicial() {
 
 }
 
-
 // =========================================================
 // ROTA PRINCIPAL
 // =========================================================
@@ -508,7 +597,6 @@ app.get(
 
     }
 );
-
 
 // =========================================================
 // LOGIN
@@ -588,7 +676,9 @@ app.post(
 
                     );
 
-            } else {
+            }
+
+            else {
 
                 senhaCorreta =
                     senha ===
@@ -663,16 +753,17 @@ app.post(
     }
 );
 
-
 // =========================================================
 // USUÁRIOS
 // =========================================================
 
 app.post(
     "/usuarios",
+
     verificarPermissao([
         "administrador"
     ]),
+
     async (
         req,
         res
@@ -692,6 +783,7 @@ app.post(
                 "administrador",
                 "medico",
                 "triagem",
+                "enfermeiro",
                 "atendimento",
                 "medicacoes"
 
@@ -763,7 +855,6 @@ app.post(
                     Date.now(),
 
                 usuario:
-
                     usuario,
 
                 senha:
@@ -772,11 +863,9 @@ app.post(
                     ),
 
                 tipo:
-
                     tipo,
 
                 nome:
-
                     nome,
 
                 criadoEm:
@@ -796,8 +885,7 @@ app.post(
 
                 `Usuário criado: ${usuario}`,
 
-                req.headers.usuario ||
-                "sistema"
+                obterUsuario(req)
 
             );
 
@@ -849,19 +937,21 @@ app.post(
     }
 );
 
-
 // =========================================================
 // CADASTRO INICIAL DO PACIENTE
-// SOMENTE ATENDIMENTO
 // =========================================================
 
 app.post(
+
     "/recepcao",
+
     verificarPermissao([
         "administrador",
         "atendimento"
     ]),
+
     upload.single("foto"),
+
     (
         req,
         res
@@ -962,20 +1052,16 @@ app.post(
                     tipo,
 
                 dataNascimento:
-                    dataNascimento ||
-                    "",
+                    dataNascimento || "",
 
                 telefone:
-                    telefone ||
-                    "",
+                    telefone || "",
 
                 sexo:
-                    sexo ||
-                    "",
+                    sexo || "",
 
                 endereco:
-                    endereco ||
-                    "",
+                    endereco || "",
 
                 foto:
                     req.file
@@ -1005,8 +1091,7 @@ app.post(
 
                 `Paciente cadastrado: ${nome}`,
 
-                req.headers.usuario ||
-                "sistema"
+                obterUsuario(req)
 
             );
 
@@ -1042,21 +1127,28 @@ app.post(
         }
 
     }
-);
 
+);
 
 // =========================================================
 // LISTAR PACIENTES
+// CORRIGIDO PARA ENFERMEIRO / TRIAGEM
 // =========================================================
 
 app.get(
+
     "/pacientes",
+
     verificarPermissao([
+
         "administrador",
         "atendimento",
         "triagem",
+        "enfermeiro",
         "medico"
+
     ]),
+
     (
         req,
         res
@@ -1076,6 +1168,7 @@ app.get(
         catch (erro) {
 
             console.error(
+                "ERRO AO LISTAR PACIENTES:",
                 erro
             );
 
@@ -1091,21 +1184,23 @@ app.get(
         }
 
     }
-);
 
+);
 
 // =========================================================
 // TRIAGEM
-// ÚNICA ROTA POST /triagem
 // =========================================================
 
 app.post(
+
     "/triagem",
 
     verificarPermissao([
+
         "administrador",
         "triagem",
         "enfermeiro"
+
     ]),
 
     (
@@ -1184,6 +1279,33 @@ app.post(
                         });
 
                 }
+
+            }
+
+            else {
+
+                paciente =
+                    db.pacientes.find(
+
+                        p =>
+                            String(
+                                p.nome
+                            )
+                                .toLowerCase()
+                                .trim() ===
+                            String(
+                                nome
+                            )
+                                .toLowerCase()
+                                .trim() &&
+                            (
+                                p.status ===
+                                "aguardando_triagem" ||
+                                p.status ===
+                                "triagem"
+                            )
+
+                    );
 
             }
 
@@ -1307,8 +1429,7 @@ app.post(
                     temperaturaNumero,
 
                 alergia:
-                    alergia ||
-                    "",
+                    alergia || "",
 
                 observacao:
                     observacao ||
@@ -1316,8 +1437,7 @@ app.post(
                     "",
 
                 pressao:
-                    pressao ||
-                    "",
+                    pressao || "",
 
                 frequenciaCardiaca:
                     frequenciaCardiaca ||
@@ -1325,8 +1445,7 @@ app.post(
                     "",
 
                 saturacao:
-                    saturacao ||
-                    "",
+                    saturacao || "",
 
                 risco:
                     risco,
@@ -1366,8 +1485,7 @@ app.post(
 
                 `Triagem realizada: ${triagem.nome} - risco ${risco}`,
 
-                req.headers.usuario ||
-                "sistema"
+                obterUsuario(req)
 
             );
 
@@ -1403,19 +1521,23 @@ app.post(
         }
 
     }
-);
 
+);
 
 // =========================================================
 // FILA DA TRIAGEM
 // =========================================================
 
 app.get(
+
     "/triagem/pacientes",
 
     verificarPermissao([
+
         "administrador",
-        "triagem"
+        "triagem",
+        "enfermeiro"
+
     ]),
 
     (
@@ -1432,6 +1554,7 @@ app.get(
                 db.pacientes.filter(
 
                     p =>
+
                         p.status ===
                         "aguardando_triagem"
 
@@ -1446,6 +1569,7 @@ app.get(
         catch (erro) {
 
             console.error(
+                "ERRO NA FILA DA TRIAGEM:",
                 erro
             );
 
@@ -1461,20 +1585,22 @@ app.get(
         }
 
     }
-);
 
+);
 
 // =========================================================
 // ATENDIMENTO
-// FILA RECEBIDA DA TRIAGEM
 // =========================================================
 
 app.get(
+
     "/atendimento",
 
     verificarPermissao([
+
         "administrador",
         "atendimento"
+
     ]),
 
     (
@@ -1531,8 +1657,7 @@ app.get(
                             a,
                             b
                         ) =>
-                            a.id -
-                            b.id
+                            a.id - b.id
 
                     );
 
@@ -1561,20 +1686,22 @@ app.get(
         }
 
     }
-);
 
+);
 
 // =========================================================
 // CONCLUIR ATENDIMENTO
-// ENVIA PARA O MÉDICO
 // =========================================================
 
 app.post(
+
     "/atendimento",
 
     verificarPermissao([
+
         "administrador",
         "atendimento"
+
     ]),
 
     upload.single("foto"),
@@ -1847,8 +1974,7 @@ app.post(
 
                 `Atendimento concluído: ${paciente.nome} enviado ao médico`,
 
-                req.headers.usuario ||
-                "sistema"
+                obterUsuario(req)
 
             );
 
@@ -1886,19 +2012,22 @@ app.post(
         }
 
     }
-);
 
+);
 
 // =========================================================
 // FILA MÉDICA
 // =========================================================
 
 app.get(
+
     "/fila-medica",
 
     verificarPermissao([
+
         "administrador",
         "medico"
+
     ]),
 
     (
@@ -1940,7 +2069,6 @@ app.get(
                                 ...paciente,
 
                                 triagem:
-
                                     triagem,
 
                                 sintomas:
@@ -1999,8 +2127,7 @@ app.get(
                             a,
                             b
                         ) =>
-                            a.id -
-                            b.id
+                            a.id - b.id
 
                     );
 
@@ -2029,19 +2156,22 @@ app.get(
         }
 
     }
-);
 
+);
 
 // =========================================================
 // CONSULTA MÉDICA
 // =========================================================
 
 app.post(
+
     "/consulta",
 
     verificarPermissao([
+
         "administrador",
         "medico"
+
     ]),
 
     (
@@ -2188,12 +2318,10 @@ app.post(
                     medicacao,
 
                 obs:
-                    obs ||
-                    "",
+                    obs || "",
 
                 medico:
-                    req.headers.usuario ||
-                    "sistema",
+                    obterUsuario(req),
 
                 criadoEm:
                     agora()
@@ -2230,8 +2358,7 @@ app.post(
 
                 `Consulta registrada: ${paciente.nome}`,
 
-                req.headers.usuario ||
-                "sistema"
+                obterUsuario(req)
 
             );
 
@@ -2267,20 +2394,23 @@ app.post(
         }
 
     }
-);
 
+);
 
 // =========================================================
 // LISTA DE MEDICAÇÕES
 // =========================================================
 
 app.get(
+
     "/lista-medicacoes",
 
     verificarPermissao([
+
         "administrador",
         "medico",
         "medicacoes"
+
     ]),
 
     (
@@ -2317,19 +2447,22 @@ app.get(
         }
 
     }
-);
 
+);
 
 // =========================================================
 // PRESCRIÇÕES / CONSULTAS
 // =========================================================
 
 app.get(
+
     "/medicacoes",
 
     verificarPermissao([
+
         "administrador",
         "medicacoes"
+
     ]),
 
     (
@@ -2366,14 +2499,15 @@ app.get(
         }
 
     }
-);
 
+);
 
 // =========================================================
 // HISTÓRICO
 // =========================================================
 
 app.get(
+
     "/historico",
 
     verificarPermissao([
@@ -2414,14 +2548,15 @@ app.get(
         }
 
     }
-);
 
+);
 
 // =========================================================
 // LIMPAR HISTÓRICO
 // =========================================================
 
 app.delete(
+
     "/historico",
 
     verificarPermissao([
@@ -2472,16 +2607,19 @@ app.delete(
         }
 
     }
+
 );
 
-
 // =========================================================
-// ROTA DE TESTE / STATUS
+// STATUS
 // =========================================================
 
 app.get(
     "/api/status",
-    (req, res) => {
+    (
+        req,
+        res
+    ) => {
 
         res.json({
 
@@ -2504,7 +2642,6 @@ app.get(
 
     }
 );
-
 
 // =========================================================
 // ERROS DO MULTER
@@ -2560,12 +2697,12 @@ app.use(
 
 );
 
-
 // =========================================================
 // ROTA NÃO ENCONTRADA
 // =========================================================
 
 app.use(
+
     (
         req,
         res
@@ -2581,8 +2718,8 @@ app.use(
             });
 
     }
-);
 
+);
 
 // =========================================================
 // INICIAR SERVIDOR
@@ -2603,21 +2740,27 @@ async function iniciarServidor() {
             () => {
 
                 console.log("");
+
                 console.log(
                     "========================================"
                 );
+
                 console.log(
                     "🏥 PROJETO SENTINELA"
                 );
+
                 console.log(
                     "Servidor iniciado com sucesso!"
                 );
+
                 console.log(
                     `Porta: ${PORT}`
                 );
+
                 console.log(
                     "========================================"
                 );
+
                 console.log("");
 
             }
@@ -2638,6 +2781,5 @@ async function iniciarServidor() {
     }
 
 }
-
 
 iniciarServidor();
